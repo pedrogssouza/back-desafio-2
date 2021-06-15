@@ -383,6 +383,15 @@ Obs.: Os relatórios pode ser filtrados acumulativamente, ou seja, filtrados por
 
 Repare que para fazer este item opcional, é necessário primero fazer o item opcional de escrever em um arquivo as vendas realizadas.
 
+## Aulas úteis:
+
+- [Roteador e Controlador](https://plataforma.cubos.academy/curso/61b2921e-a262-4f04-b943-89c4cfb15e5c/data/17/05/2021/aula/9821747f-8d71-47ee-b48f-426997e37ce2/b5b395c1-1c49-4866-a749-8719a176c3c5)
+- [Reutilizando validações](https://plataforma.cubos.academy/curso/61b2921e-a262-4f04-b943-89c4cfb15e5c/data/17/05/2021/aula/9821747f-8d71-47ee-b48f-426997e37ce2/8206f90d-d0e5-472d-8e65-331dbe5f0ecd)
+- [Adicionando dias úteis com date-fns](https://plataforma.cubos.academy/curso/61b2921e-a262-4f04-b943-89c4cfb15e5c/data/24/05/2021/aula/567d09bf-b527-42fa-b063-63d9ff4743f1/7c3ac2fe-80e1-4646-9e34-8dd8b38f5a0d)
+- [async / await](https://plataforma.cubos.academy/curso/61b2921e-a262-4f04-b943-89c4cfb15e5c/data/31/05/2021/aula/e12827a0-8c67-4293-92aa-d5763020a2f7/bfa1c52e-6502-474f-aecf-1cf718deff88)
+- [try / catch](https://plataforma.cubos.academy/curso/61b2921e-a262-4f04-b943-89c4cfb15e5c/data/07/06/2021/aula/0304e88c-4ac5-42b8-924e-81216af18f35/f882d693-d529-4fa4-bc19-27464c856582)
+- [Criando transações pagarme](https://plataforma.cubos.academy/curso/61b2921e-a262-4f04-b943-89c4cfb15e5c/data/07/06/2021/aula/0304e88c-4ac5-42b8-924e-81216af18f35/9446fc5e-a71f-49b0-a285-62b306d7a0cd)
+
 
 **LEMBRE-SE**: é melhor feito do quê perfeito!!!
 
