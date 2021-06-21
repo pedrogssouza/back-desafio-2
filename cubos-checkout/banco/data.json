@@ -86,7 +86,15 @@
     }
   ],
   "carrinho": {
-    "produtos": [],
+    "produtos": [
+      {
+        "id": 1,
+        "quantidade": 4,
+        "nome": "Pipoca para Microondas Manteiga YOKI 50g",
+        "preco": 169,
+        "categoria": "Bazar"
+      }
+    ],
     "subtotal": 0,
     "dataDeEntrega": null,
     "valorDoFrete": 0,
