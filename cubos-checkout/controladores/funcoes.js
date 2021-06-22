@@ -93,6 +93,11 @@ async function inserirProdutoNoCarrinho(req, res) {
   const quantidade = Number(req.body.quantidade);
 
   const produto = produtosEmEstoque.find((produto) => produto.id === id);
+
+  const indiceProdutoEmEstoque = produtosEmEstoque.findIndex(
+    (produtoEmEstoque) => produtoEmEstoque.id === id
+  );
+
   const indiceProdutoDoCarrinho = carrinho.produtos.findIndex(
     (produtoDoCarrinho) => produtoDoCarrinho.id === id
   );
@@ -100,7 +105,7 @@ async function inserirProdutoNoCarrinho(req, res) {
   if (produto) {
     if (produto.estoque >= quantidade) {
       if (indiceProdutoDoCarrinho !== -1) {
-        carrinho.produtos[indiceProdutoDoCarrinho].quantidade += 1;
+        carrinho.produtos[indiceProdutoDoCarrinho].quantidade += quantidade;
       } else {
         const produtoFormatado = {
           id: produto.id,
@@ -111,6 +116,9 @@ async function inserirProdutoNoCarrinho(req, res) {
         };
         carrinho.produtos.push(produtoFormatado);
       }
+
+      produtosEmEstoque[indiceProdutoEmEstoque].estoque -= quantidade;
+
       await escreverNoArquivo({
         produtos: produtosEmEstoque,
         carrinho: carrinho,
@@ -179,9 +187,44 @@ async function editarQuantidade(req, res) {
   return getCarrinho(req, res);
 }
 
+async function deletarProduto(req, res) {
+  const { produtos: produtosEmEstoque, carrinho } = await lerArquivo();
+  const id = Number(req.params.idProduto);
+
+  const indiceProdutoDoCarrinho = carrinho.produtos.findIndex(
+    (produtoDoCarrinho) => produtoDoCarrinho.id === id
+  );
+
+  if (indiceProdutoDoCarrinho !== -1) {
+    const produtosRemovidos = carrinho.produtos.splice(
+      indiceProdutoDoCarrinho,
+      1
+    );
+
+    const indiceProdutoEmEstoque = produtosEmEstoque.findIndex(
+      (produtoEmEstoque) => produtoEmEstoque.id === id
+    );
+
+    produtosEmEstoque[indiceProdutoEmEstoque].estoque +=
+      produtosRemovidos[0].quantidade;
+
+    await escreverNoArquivo({
+      produtos: produtosEmEstoque,
+      carrinho: carrinho,
+    });
+
+    return getCarrinho(req, res);
+  } else {
+    res.json(
+      "O produto informado não foi adicionado ao carrinho, portanto não pode ser removido do carrinho"
+    );
+  }
+}
+
 module.exports = {
   getProdutos,
   getCarrinho,
   inserirProdutoNoCarrinho,
   editarQuantidade,
+  deletarProduto,
 };

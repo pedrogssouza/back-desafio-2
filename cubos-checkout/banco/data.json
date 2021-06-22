@@ -25,7 +25,7 @@
       "id": 4,
       "nome": "Desinfetante Uso Geral Herbal Omo Frasco 500ml",
       "preco": 529,
-      "estoque": 79,
+      "estoque": 0,
       "categoria": "Limpeza"
     },
     {
@@ -86,10 +86,25 @@
     }
   ],
   "carrinho": {
-    "produtos": [],
-    "subTotal": 3996,
-    "dataDeEntrega": "2021-07-13T16:37:39.214Z",
-    "valorDoFrete": 5000,
-    "totalAPagar": 8996
+    "produtos": [
+      {
+        "id": 1,
+        "quantidade": 2,
+        "nome": "Pipoca para Microondas Manteiga YOKI 50g",
+        "preco": 169,
+        "categoria": "Bazar"
+      },
+      {
+        "id": 4,
+        "quantidade": 179,
+        "nome": "Desinfetante Uso Geral Herbal Omo Frasco 500ml",
+        "preco": 529,
+        "categoria": "Limpeza"
+      }
+    ],
+    "subTotal": 95029,
+    "dataDeEntrega": "2021-07-13T17:21:13.657Z",
+    "valorDoFrete": 0,
+    "totalAPagar": 95029
   }
 }
