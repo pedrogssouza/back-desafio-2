@@ -5,8 +5,8 @@ async function getProdutos(req, res) {
   const categoria = req.query.categoria;
   const precoInicial = Number(req.query.precoInicial);
   const precoFinal = Number(req.query.precoFinal);
-  const dados = await lerArquivo();
-  const produtos = dados.produtos
+  const { produtos } = await lerArquivo();
+  const produtosFiltrados = produtos
     .filter((produto) => produto.estoque)
     .filter((produto) => {
       if (!(categoria || precoInicial || precoFinal)) {
@@ -51,13 +51,12 @@ async function getProdutos(req, res) {
         }
       }
     });
-  res.json(produtos);
+  res.json(produtosFiltrados);
 }
 
 async function getCarrinho(req, res) {
-  const dados = await lerArquivo();
-  const produtosDoCarrinho = dados.carrinho.produtos;
-  const produtosEmEstoque = dados.produtos;
+  const { produtos: produtosEmEstoque, carrinho } = await lerArquivo();
+  const produtosDoCarrinho = carrinho.produtos;
   const data = new Date();
   const dataDeEntrega = addBusinessDays(data, 15);
 
@@ -71,7 +70,7 @@ async function getCarrinho(req, res) {
   const valorDoFrete = subTotal > 20000 ? 0 : 5000;
   const frete = subTotal ? valorDoFrete : 0;
 
-  const carrinho = {
+  const carrinhoFormatado = {
     produtos: produtosDoCarrinho,
     subTotal: total,
     dataDeEntrega: subTotal ? dataDeEntrega : null,
@@ -79,20 +78,21 @@ async function getCarrinho(req, res) {
     totalAPagar: total + frete,
   };
 
-  const resultado = {
-    carrinho: carrinho,
-  };
+  await escreverNoArquivo({
+    produtos: produtosEmEstoque,
+    carrinho: carrinhoFormatado,
+  });
 
-  res.json(resultado);
+  res.json(carrinhoFormatado);
 }
 
 async function inserirProdutoNoCarrinho(req, res) {
-  const { produtos, carrinho } = await lerArquivo();
+  const { produtos: produtosEmEstoque, carrinho } = await lerArquivo();
 
   const id = Number(req.body.id);
   const quantidade = Number(req.body.quantidade);
 
-  const produto = produtos.find((produto) => produto.id === id);
+  const produto = produtosEmEstoque.find((produto) => produto.id === id);
   const indiceProdutoDoCarrinho = carrinho.produtos.findIndex(
     (produtoDoCarrinho) => produtoDoCarrinho.id === id
   );
@@ -101,8 +101,6 @@ async function inserirProdutoNoCarrinho(req, res) {
     if (produto.estoque >= quantidade) {
       if (indiceProdutoDoCarrinho !== -1) {
         carrinho.produtos[indiceProdutoDoCarrinho].quantidade += 1;
-        // console.log(carrinho.produtos[indiceProdutoDoCarrinho]);
-        // console.log(indiceProdutoDoCarrinho);
       } else {
         const produtoFormatado = {
           id: produto.id,
@@ -114,7 +112,7 @@ async function inserirProdutoNoCarrinho(req, res) {
         carrinho.produtos.push(produtoFormatado);
       }
       await escreverNoArquivo({
-        produtos: produtos,
+        produtos: produtosEmEstoque,
         carrinho: carrinho,
       });
       return getCarrinho(req, res);
@@ -126,4 +124,64 @@ async function inserirProdutoNoCarrinho(req, res) {
   }
 }
 
-module.exports = { getProdutos, getCarrinho, inserirProdutoNoCarrinho };
+async function editarQuantidade(req, res) {
+  const { produtos: produtosEmEstoque, carrinho } = await lerArquivo();
+
+  const quantidade = Number(req.body.quantidade);
+  const id = Number(req.params.idProduto);
+  const indiceProdutoDoCarrinho = carrinho.produtos.findIndex(
+    (produtoDoCarrinho) => produtoDoCarrinho.id === id
+  );
+
+  const indiceProdutoEmEstoque = produtosEmEstoque.findIndex(
+    (produtoEmEstoque) => produtoEmEstoque.id === id
+  );
+
+  if (indiceProdutoDoCarrinho !== -1) {
+    if (quantidade > 0) {
+      if (produtosEmEstoque[indiceProdutoEmEstoque].estoque >= quantidade) {
+        produtosEmEstoque[indiceProdutoEmEstoque].estoque -= quantidade;
+        carrinho.produtos[indiceProdutoDoCarrinho].quantidade += quantidade;
+      } else {
+        res.json("O estoque não contém a quantidade desejada de", produto.nome);
+        return;
+      }
+    } else {
+      if (
+        -1 * quantidade >
+        carrinho.produtos[indiceProdutoDoCarrinho].quantidade
+      ) {
+        res.json(
+          `O carrinho não possui ${-1 * quantidade} de ${
+            carrinho.produtos[indiceProdutoDoCarrinho].nome
+          } para remover`
+        );
+        return;
+      } else {
+        produtosEmEstoque[indiceProdutoEmEstoque].estoque -= quantidade;
+        carrinho.produtos[indiceProdutoDoCarrinho].quantidade += quantidade;
+
+        if (carrinho.produtos[indiceProdutoDoCarrinho].quantidade === 0) {
+          carrinho.produtos.splice(indiceProdutoDoCarrinho, 1);
+        }
+      }
+    }
+  } else {
+    res.json("O produto informado ainda não foi adicionado ao carrinho");
+    return;
+  }
+
+  await escreverNoArquivo({
+    produtos: produtosEmEstoque,
+    carrinho: carrinho,
+  });
+
+  return getCarrinho(req, res);
+}
+
+module.exports = {
+  getProdutos,
+  getCarrinho,
+  inserirProdutoNoCarrinho,
+  editarQuantidade,
+};

@@ -4,7 +4,7 @@
       "id": 1,
       "nome": "Pipoca para Microondas Manteiga YOKI 50g",
       "preco": 169,
-      "estoque": 6,
+      "estoque": 10,
       "categoria": "Bazar"
     },
     {
@@ -18,7 +18,7 @@
       "id": 3,
       "nome": "Limpador Cif Multiuso 800g Em Pó",
       "preco": 999,
-      "estoque": 7,
+      "estoque": 5,
       "categoria": "Limpeza"
     },
     {
@@ -86,18 +86,10 @@
     }
   ],
   "carrinho": {
-    "produtos": [
-      {
-        "id": 1,
-        "quantidade": 4,
-        "nome": "Pipoca para Microondas Manteiga YOKI 50g",
-        "preco": 169,
-        "categoria": "Bazar"
-      }
-    ],
-    "subtotal": 0,
-    "dataDeEntrega": null,
-    "valorDoFrete": 0,
-    "totalAPagar": 0
+    "produtos": [],
+    "subTotal": 3996,
+    "dataDeEntrega": "2021-07-13T16:37:39.214Z",
+    "valorDoFrete": 5000,
+    "totalAPagar": 8996
   }
 }
