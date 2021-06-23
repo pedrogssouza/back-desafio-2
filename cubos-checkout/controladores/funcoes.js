@@ -125,10 +125,12 @@ async function inserirProdutoNoCarrinho(req, res) {
       });
       return getCarrinho(req, res);
     } else {
-      res.json("O estoque não contém a quantidade desejada de", produto.nome);
+      res.json(`O estoque não contém a quantidade desejada de ${produto.nome}`);
+      return;
     }
   } else {
     res.json("O ID informado não é válido");
+    return;
   }
 }
 
@@ -221,10 +223,84 @@ async function deletarProduto(req, res) {
   }
 }
 
+async function deletarCarrinho(req, res) {
+  const { produtos: produtosEmEstoque, carrinho } = await lerArquivo();
+
+  for (let produto of carrinho.produtos) {
+    const id = produto.id;
+
+    const indiceProdutoEmEstoque = produtosEmEstoque.findIndex(
+      (produtoEmEstoque) => produtoEmEstoque.id === id
+    );
+
+    produtosEmEstoque[indiceProdutoEmEstoque].estoque += produto.quantidade;
+  }
+
+  await escreverNoArquivo({
+    produtos: produtosEmEstoque,
+    carrinho: {
+      produtos: [],
+      subtotal: 0,
+      dataDeEntrega: null,
+      valorDoFrete: 0,
+      totalAPagar: 0,
+    },
+  });
+
+  res.json("O carrinho foi esvazeado com sucesso!");
+}
+
+async function finalizarCompra(req, res) {
+  const { produtos: produtosEmEstoque, carrinho } = await lerArquivo();
+
+  if (carrinho.produtos.length === 0) {
+    res.json("O carrinho está vazio");
+    return;
+  }
+
+  if (req.body.type !== undefined) {
+    if (req.body.type !== "individual") {
+      res.json("O type precisa ser 'individual'");
+      return;
+    }
+  } else {
+    res.json("O type não foi informado no body");
+    return;
+  }
+
+  if (req.body.country !== undefined) {
+    if (req.body.country.length !== 2) {
+      res.json("Informe a sigla do país com apenas 2 caracteres");
+      return;
+    }
+  } else {
+    res.json("O país não foi informado no body");
+    return;
+  }
+
+  if (req.body.name !== undefined) {
+    if (!req.body.name.includes(" ")) {
+      res.json("É necessário passar o nome e o sobrenome no campo 'name'");
+      return;
+    }
+  } else {
+    res.json("O nome não foi informado no body");
+    return;
+  }
+
+  if (req.body.documents !== undefined) {
+  } else {
+    res.json("É necessário passar os documents");
+    return;
+  }
+}
+
 module.exports = {
   getProdutos,
   getCarrinho,
   inserirProdutoNoCarrinho,
   editarQuantidade,
   deletarProduto,
+  deletarCarrinho,
+  finalizarCompra,
 };
